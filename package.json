@@ -9,14 +9,13 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "eslint --ext .ts ."
+    "lint:fix": "eslint src/**/*.{ts,tsx} --quiet --fix"
   },
   "keywords": [],
   "author": {
     "name": "Drew Teeter",
     "email": "drew@drewteeter.com"
   },
-  "license": "MIT",
   "config": {
     "forge": {
       "packagerConfig": {},
@@ -52,7 +51,7 @@
               "entryPoints": [
                 {
                   "html": "./src/index.html",
-                  "js": "./src/renderer.ts",
+                  "js": "./src/renderer.tsx",
                   "name": "main_window"
                 }
               ]
@@ -61,6 +60,16 @@
         ]
       ]
     }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix"
+    ]
   },
   "devDependencies": {
     "@electron-forge/cli": "6.0.0-beta.52",
@@ -75,14 +84,25 @@
     "css-loader": "^3.0.0",
     "electron": "9.1.0",
     "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-import": "^2.20.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-react": "^7.20.3",
     "fork-ts-checker-webpack-plugin": "^3.1.1",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.11",
     "node-loader": "^0.6.0",
+    "prettier": "^2.0.5",
     "style-loader": "^0.23.1",
     "ts-loader": "^6.2.1",
     "typescript": "^3.7.0"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0"
+    "@types/react": "^16.9.43",
+    "@types/react-dom": "^16.9.8",
+    "electron-squirrel-startup": "^1.0.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-hot-loader": "^4.12.21"
   }
 }
