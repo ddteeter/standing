@@ -92,6 +92,7 @@
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
     "node-loader": "^0.6.0",
+    "postcss-loader": "^3.0.0",
     "prettier": "^2.0.5",
     "style-loader": "^0.23.1",
     "ts-loader": "^6.2.1",
@@ -100,9 +101,15 @@
   "dependencies": {
     "@types/react": "^16.9.43",
     "@types/react-dom": "^16.9.8",
+    "@types/ws": "^7.2.6",
+    "date-fns": "^2.14.0",
     "electron-squirrel-startup": "^1.0.0",
+    "keytar": "^6.0.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-hot-loader": "^4.12.21"
+    "react-hot-loader": "^4.12.21",
+    "rxjs": "^6.6.0",
+    "tailwindcss": "^1.5.1",
+    "ws": "^7.3.1"
   }
 }
