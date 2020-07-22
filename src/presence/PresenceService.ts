@@ -1,7 +1,7 @@
-import { Subject } from "rxjs";
+import { Observable } from "rxjs";
 
 interface PresenceService {
-  getSubject(): Subject<PresenceStatus>;
+  getObservable(): Observable<PresenceStatus>;
 }
 
 class PresenceStatus {
@@ -15,18 +15,19 @@ enum Presence {
 }
 
 class AlwaysPresentService implements PresenceService {
-  private readonly subject: Subject<PresenceStatus>;
+  private readonly observable: Observable<PresenceStatus>;
 
   constructor() {
-    this.subject = new Subject();
-    this.subject.next({
-      presence: Presence.PRESENT,
-      at: new Date(),
+    this.observable = new Observable((subscriber) => {
+      subscriber.next({
+        presence: Presence.PRESENT,
+        at: new Date(),
+      });
     });
   }
 
-  getSubject(): Subject<PresenceStatus> {
-    return this.subject;
+  getObservable(): Observable<PresenceStatus> {
+    return this.observable;
   }
 }
 

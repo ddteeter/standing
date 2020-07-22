@@ -1,7 +1,7 @@
 import { hot } from "react-hot-loader";
 import * as React from "react";
-import TogglPresenceService from "./presence/TogglPresenceService";
-import PresenceService from "./presence/PresenceService";
+import TogglPresenceService from "./presence/toggl/TogglPresenceService";
+import PresenceService, { PresenceStatus } from "./presence/PresenceService";
 import { ipcRenderer } from "electron";
 
 interface RetrievedPassword {
@@ -18,9 +18,11 @@ ipcRenderer
   .then((password: string) => {
     console.log("Using api token", password);
     const presenceService: PresenceService = new TogglPresenceService(password);
-    presenceService.getSubject().subscribe((presenceStatus) => {
-      console.log(presenceStatus);
-    });
+    presenceService
+      .getObservable()
+      .subscribe((presenceStatus: PresenceStatus) => {
+        console.log(presenceStatus);
+      });
   });
 
 const App = () => <div>Hi from react!</div>;
