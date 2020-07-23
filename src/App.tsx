@@ -16,7 +16,6 @@ ipcRenderer
     account: "api_token",
   })
   .then((password: string) => {
-    console.log("Using api token", password);
     const presenceService: PresenceService = new TogglPresenceService(password);
     presenceService
       .getObservable()
