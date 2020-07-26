@@ -1,7 +1,9 @@
 import { Observable } from "rxjs";
+import CredentialsService from "../credentials/CredentialsService";
 
 interface PresenceService {
   getObservable(): Observable<PresenceStatus>;
+  initialize(credentialsService: CredentialsService): Promise<void>;
 }
 
 class PresenceStatus {
@@ -14,22 +16,5 @@ enum Presence {
   ABSENT,
 }
 
-class AlwaysPresentService implements PresenceService {
-  private readonly observable: Observable<PresenceStatus>;
-
-  constructor() {
-    this.observable = new Observable((subscriber) => {
-      subscriber.next({
-        presence: Presence.PRESENT,
-        at: new Date(),
-      });
-    });
-  }
-
-  getObservable(): Observable<PresenceStatus> {
-    return this.observable;
-  }
-}
-
 export default PresenceService;
-export { AlwaysPresentService, Presence, PresenceStatus };
+export { Presence, PresenceStatus };

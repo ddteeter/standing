@@ -2,15 +2,22 @@ import PresenceService, { Presence, PresenceStatus } from "../PresenceService";
 import { Observable, Subscriber } from "rxjs";
 import TimeEntry from "./TimeEntry";
 import TogglResponse from "./TogglResponse";
+import CredentialsService from "../../credentials/CredentialsService";
+import Credentials from "../../credentials/Credentials";
 
 class TogglPresenceService implements PresenceService {
-  private readonly observable: Observable<PresenceStatus>;
-  private readonly apiToken: string;
+  private apiToken: string;
 
-  constructor(apiToken: string) {
-    this.apiToken = apiToken;
+  initialize(credentialsService: CredentialsService): Promise<void> {
+    return credentialsService
+      .getCredentials("Standing/Toggl", "api_token")
+      .then((credentials: Credentials) => {
+        this.apiToken = credentials.password;
+      });
+  }
 
-    this.observable = new Observable((subscriber) => {
+  getObservable(): Observable<PresenceStatus> {
+    return new Observable((subscriber) => {
       this.fetchActiveTimeEntry(subscriber).finally(() => {
         const socket = new WebSocket("wss://stream.toggl.com/ws");
 
@@ -19,7 +26,7 @@ class TogglPresenceService implements PresenceService {
             JSON.stringify({
               type: "authenticate",
               // eslint-disable-next-line @typescript-eslint/camelcase
-              api_token: apiToken,
+              api_token: this.apiToken,
             })
           );
         });
@@ -48,10 +55,6 @@ class TogglPresenceService implements PresenceService {
         });
       });
     });
-  }
-
-  getObservable(): Observable<PresenceStatus> {
-    return this.observable;
   }
 
   private fetchActiveTimeEntry(
