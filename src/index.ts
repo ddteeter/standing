@@ -22,8 +22,9 @@ ipcMain.handle("getPassword", (event: any, msg: any) => {
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    height: 600,
-    width: 800,
+    height: 425,
+    width: 385,
+    frame: false,
     webPreferences: {
       nodeIntegration: true,
     },
@@ -33,7 +34,7 @@ const createWindow = () => {
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools({ mode: "detach" });
 };
 
 // This method will be called when Electron has finished

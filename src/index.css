@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@responsive {
+  .bg-gradient-white-to-gray-to-white {
+    background-image: linear-gradient(to right, theme('colors.white') 20%, theme('colors.gray.900') 50%, theme('colors.white') 80%);
+  }
+}
