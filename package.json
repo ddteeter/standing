@@ -104,10 +104,12 @@
     "date-fns": "^2.14.0",
     "electron-squirrel-startup": "^1.0.0",
     "keytar": "^6.0.1",
+    "menubar": "^9.0.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-hot-loader": "^4.12.21",
     "rxjs": "^6.6.0",
-    "tailwindcss": "^1.5.1"
+    "tailwindcss": "^1.5.1",
+    "tailwindcss-textshadow": "^2.1.3"
   }
 }

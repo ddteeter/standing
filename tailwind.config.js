@@ -7,5 +7,9 @@ module.exports = {
       lg: "1024px",
       xl: "1280px",
     },
+    textShadow: {
+      default: "6px 6px 8px rgba(203, 213, 224, 1)",
+    },
   },
+  plugins: [require("tailwindcss-textshadow")],
 };
