@@ -1,15 +1,14 @@
-import { app, BrowserWindow } from "electron";
+import { app } from "electron";
 import { menubar } from "menubar";
 import { initialize as initializeIPCListeners } from "./main/ipcListeners";
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any;
 
 initializeIPCListeners();
 
-console.log(MAIN_WINDOW_WEBPACK_ENTRY);
-console.log(process.cwd() + "/img/icons/DeskIconTemplate.png");
 const mb = menubar({
   index: MAIN_WINDOW_WEBPACK_ENTRY,
   icon: process.cwd() + "/img/icons/DeskIconTemplate.png",
+  preloadWindow: true,
   browserWindow: {
     height: 425,
     width: 385,
