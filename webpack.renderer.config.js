@@ -10,6 +10,10 @@ rules.push({
     "postcss-loader",
   ],
 });
+rules.push({
+  test: /\.(svg)$/,
+  use: ["file-loader"],
+});
 
 module.exports = {
   module: {

@@ -11,5 +11,8 @@ module.exports = {
       default: "4px 4px 3px rgba(203, 213, 224, 1)",
     },
   },
+  variants: {
+    textColor: ["responsive", "focus", "hover", "active"],
+  },
   plugins: [require("tailwindcss-textshadow")],
 };

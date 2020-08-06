@@ -8,6 +8,7 @@ import { interval, combineLatest } from "rxjs";
 import { map } from "rxjs/operators";
 import ManualDeskStatusService from "./desk/status/ManualDeskStatusService";
 import DeskStatusService, { DeskStatus } from "./desk/status/DeskStatusService";
+import NavBar from "./view/nav/NavBar";
 
 const credentialsService = new CredentialsService();
 const presenceService: PresenceService = new TogglPresenceService();
@@ -30,6 +31,11 @@ presenceService.initialize(credentialsService).then(() => {
     .subscribe(console.log);
 });
 
-const App = () => <Dashboard />;
+const App = (): React.ReactElement => (
+  <div>
+    <Dashboard />
+    <NavBar />
+  </div>
+);
 
 export default hot(module)(App);
