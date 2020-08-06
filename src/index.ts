@@ -1,6 +1,8 @@
 import { app } from "electron";
 import { menubar } from "menubar";
 import { initialize as initializeIPCListeners } from "./main/ipcListeners";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any;
 
 initializeIPCListeners();
