@@ -6,7 +6,7 @@ interface SettingsService {
 
 class DefaultSettingsService implements SettingsService {
   showSettings(): void {
-    ipcRenderer.postMessage("settings", { command: "show" });
+    ipcRenderer.invoke("showSettings");
   }
 }
 

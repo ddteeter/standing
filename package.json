@@ -53,6 +53,11 @@
                   "html": "./src/index.html",
                   "js": "./src/renderer.tsx",
                   "name": "main_window"
+                },
+                {
+                  "html": "./src/settings-index.html",
+                  "js": "./src/renderer_settings.tsx",
+                  "name": "settings_window"
                 }
               ]
             }

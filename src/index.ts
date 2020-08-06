@@ -15,7 +15,6 @@ const mb = menubar({
     height: 425,
     width: 385,
     frame: false,
-    alwaysOnTop: true,
     webPreferences: {
       nodeIntegration: true,
     },
