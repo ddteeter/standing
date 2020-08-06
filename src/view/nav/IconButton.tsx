@@ -1,9 +1,12 @@
 import * as React from "react";
 
-type Props = {};
+type Props = {
+  onClick: () => void;
+};
 
-const IconButton: React.FunctionComponent = ({
+const IconButton: React.FunctionComponent<React.PropsWithChildren<Props>> = ({
   children,
+  onClick,
 }: React.PropsWithChildren<Props>): React.ReactElement<
   React.PropsWithChildren<Props>
 > => {
@@ -13,6 +16,7 @@ const IconButton: React.FunctionComponent = ({
       className={
         "text-gray-100 hover:text-blue-400 active:text-blue-700 focus:outline-none focus:text-blue-400"
       }
+      onClick={(): void => onClick()}
     >
       {children}
     </button>

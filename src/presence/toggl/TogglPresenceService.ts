@@ -20,7 +20,6 @@ class TogglPresenceService implements PresenceService {
     return new Observable((subscriber) => {
       this.fetchActiveTimeEntry(subscriber).finally(() => {
         const socket = new WebSocket("wss://stream.toggl.com/ws");
-
         socket.addEventListener("open", () => {
           socket.send(
             JSON.stringify({
@@ -30,11 +29,9 @@ class TogglPresenceService implements PresenceService {
             })
           );
         });
-
         socket.addEventListener("message", (event: MessageEvent) => {
           if (typeof event.data === "string") {
             const message = JSON.parse(event.data);
-
             if (message.session_id) {
               // Authenticated
             } else if (message.type === "ping") {
