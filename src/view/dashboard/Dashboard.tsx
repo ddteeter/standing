@@ -24,7 +24,7 @@ const Dashboard = (): React.ReactElement => {
 
   const [deskPosition, setDeskPosition] = useState(null);
   const [analytics, setAnalytics] = useState({
-    sittingTime: 0,
+    totalTime: 0,
     standingTime: 0,
   });
 
@@ -62,7 +62,7 @@ const Dashboard = (): React.ReactElement => {
         label="Sitting Time"
         transform={(): EntryDisplayable => {
           return {
-            value: formatSeconds(analytics.sittingTime),
+            value: formatSeconds(analytics.totalTime - analytics.standingTime),
           };
         }}
       />

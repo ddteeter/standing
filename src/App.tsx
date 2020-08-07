@@ -80,10 +80,8 @@ const App = (): React.ReactElement => {
     <DeskControlServiceContext.Provider value={deskControlService}>
       <StatusContext.Provider value={statusObservable}>
         <AnalyticsContext.Provider value={analyticsObservable}>
-          <div>
-            <Dashboard />
-            <NavBar />
-          </div>
+          <Dashboard />
+          <NavBar />
         </AnalyticsContext.Provider>
       </StatusContext.Provider>
     </DeskControlServiceContext.Provider>

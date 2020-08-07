@@ -12,8 +12,8 @@ class PresenceStatus {
 }
 
 enum Presence {
-  PRESENT,
-  ABSENT,
+  PRESENT = "PRESENT",
+  ABSENT = "ABSENT",
 }
 
 const displayable = (presence: Presence): string => {

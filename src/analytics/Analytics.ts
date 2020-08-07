@@ -1,6 +1,6 @@
 interface Analytics {
   standingTime: number;
-  sittingTime: number;
+  totalTime: number;
 }
 
 export default Analytics;
