@@ -7,6 +7,7 @@
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:import/errors",
@@ -21,6 +22,8 @@
         "extensions": [".ts", ".tsx"]
       }
     },
+    "import/extensions": [".ts", ".tsx"],
+    "import/parsers": { "@typescript-eslint/parser": [".ts", ".tsx"] },
     "react": {
       "version": "detect"
     }
