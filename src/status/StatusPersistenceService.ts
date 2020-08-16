@@ -1,5 +1,5 @@
-import { Status } from "./Status";
 import { Observable } from "rxjs";
+import StatusUpdate from "./StatusUpdate";
 
 type StatusChange = {
   id: string;
@@ -9,7 +9,7 @@ type StatusChange = {
 };
 
 interface StatusPersistenceService {
-  statusUpdate(status: Status): void;
+  statusUpdate(status: StatusUpdate): void;
   initialize(): Promise<void>;
   getStatusObservable(): Promise<Observable<StatusChange>>;
 }

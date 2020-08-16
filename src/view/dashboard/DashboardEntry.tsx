@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import StatusContext from "../../status/StatusContext";
-import { Status } from "../../status/Status";
+import Status from "../../status/Status";
 import EntryDisplayable from "./EntryDisplayable";
 
 type Props = {
@@ -26,7 +26,7 @@ const DashboardEntry = ({ label, transform }: Props): React.ReactElement => {
     return (): void => {
       subscription.unsubscribe();
     };
-  }, [statusContext]);
+  }, [statusContext, transform]);
 
   return (
     <div className="justify-center w-full h-32 xs:w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/5 ml-auto mr-auto p-3">

@@ -1,7 +1,8 @@
-import { PresenceStatus } from "../presence/PresenceService";
-import { DeskStatus } from "../desk/status/DeskStatusService";
+import { Presence } from "../presence/PresenceService";
+import { DeskPosition } from "../desk/status/DeskStatusService";
 
-export interface Status {
-  presence: PresenceStatus;
-  desk: DeskStatus;
+export default interface StatusChange {
+  at: Date;
+  presence: Presence;
+  deskPosition: DeskPosition;
 }

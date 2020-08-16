@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import DashboardEntry from "./DashboardEntry";
-import { Status } from "../../status/Status";
+import Status from "../../status/Status";
 import {
   displayable as displayableDeskPosition,
   invert,
@@ -30,7 +30,7 @@ const Dashboard = (): React.ReactElement => {
 
   useEffect(() => {
     const subscription = statusContext.subscribe((status) => {
-      setDeskPosition(status.desk.position);
+      setDeskPosition(status.deskPosition);
     });
 
     return (): void => {
@@ -91,9 +91,9 @@ const Dashboard = (): React.ReactElement => {
         label="Desk Position"
         transform={(status: Status): EntryDisplayable => {
           return {
-            value: displayableDeskPosition(status.desk.position),
+            value: displayableDeskPosition(status.deskPosition),
             color:
-              status.desk.position == DeskPosition.SITTING
+              status.deskPosition == DeskPosition.SITTING
                 ? "text-red-600"
                 : "text-green-600",
           };
@@ -103,9 +103,9 @@ const Dashboard = (): React.ReactElement => {
         label="Status"
         transform={(status: Status): EntryDisplayable => {
           return {
-            value: displayablePresence(status.presence.presence),
+            value: displayablePresence(status.presence),
             color:
-              status.presence.presence == Presence.ABSENT
+              status.presence == Presence.ABSENT
                 ? "text-red-600"
                 : "text-green-600",
           };

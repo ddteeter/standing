@@ -9,7 +9,7 @@ class DefaultAnalyticsService implements AnalyticsService {
   getActiveAnalytics(): Observable<Analytics> {
     return new Observable<Analytics>((subscriber) => {
       subscriber.next({
-        sittingTime: 0,
+        totalTime: 0,
         standingTime: 0,
       });
     });

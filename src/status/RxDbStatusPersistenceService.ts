@@ -1,7 +1,7 @@
 import StatusPersistenceService, {
   StatusChange,
 } from "./StatusPersistenceService";
-import { Status } from "./Status";
+import StatusUpdate from "./StatusUpdate";
 import {
   RxDocument,
   RxCollection,
@@ -9,11 +9,12 @@ import {
   createRxDatabase,
   RxJsonSchema,
   addRxPlugin,
+  removeRxDatabase,
 } from "rxdb";
 import * as uuid from "uuid";
 import * as pouchDbIdb from "pouchdb-adapter-idb";
 import { Observable, concat, of } from "rxjs";
-import { concatAll } from "rxjs/operators";
+import { concatAll, tap } from "rxjs/operators";
 import { startOfToday } from "date-fns";
 
 type StatusChangeMethods = {};
@@ -40,6 +41,7 @@ const statusChangeSchema: RxJsonSchema<StatusChange> = {
     },
   },
   required: ["id", "atEpochSeconds", "presence", "deskPosition"],
+  indexes: ["atEpochSeconds"],
 };
 
 type StatusChangeDocument = RxDocument<StatusChange, StatusChangeMethods>;
@@ -54,7 +56,7 @@ type StatusChangeCollection = RxCollection<
 >;
 
 type DatabaseCollections = {
-  statusChanges: StatusChangeCollection;
+  status_changes: StatusChangeCollection;
 };
 
 type Database = RxDatabase<DatabaseCollections>;
@@ -65,33 +67,36 @@ class RxDbStatusPersistenceService implements StatusPersistenceService {
   private database: Database;
 
   async initialize(): Promise<void> {
+    // TODO: Development only
+    await removeRxDatabase("withstanding_db", "idb");
+
     this.database = await createRxDatabase<DatabaseCollections>({
-      name: "withstanding-db",
+      name: "withstanding_db",
       adapter: "idb",
     });
 
     await this.database.collection({
-      name: "statusChange",
+      name: "status_changes",
       schema: statusChangeSchema,
       methods: statusChangeMethods,
       statics: StatusChangeCollectionMethods,
     });
   }
 
-  async statusUpdate(status: Status): Promise<void> {
-    await this.database.statusChanges.insert({
+  async statusUpdate(status: StatusUpdate): Promise<void> {
+    await this.database.status_changes.insert({
       id: uuid.v4(),
       atEpochSeconds: Math.max(
         status.desk.at.getTime(),
         status.presence.at.getTime()
       ),
-      presence: status.desk.position,
-      deskPosition: status.presence.presence,
+      presence: status.presence.presence,
+      deskPosition: status.desk.position,
     });
   }
 
   async getStatusObservable(): Promise<Observable<StatusChange>> {
-    const latestStatusChanges: StatusChange[] = await this.database.statusChanges
+    const latestStatusChanges: StatusChange[] = await this.database.status_changes
       .find()
       .where("atEpochSeconds")
       .gte(startOfToday().getTime())
@@ -106,13 +111,14 @@ class RxDbStatusPersistenceService implements StatusPersistenceService {
         ? latestStatusChanges[0].atEpochSeconds
         : startOfToday().getTime();
 
-    let statusChangesObservable: Observable<StatusChange> = this.database.statusChanges
+    let statusChangesObservable: Observable<StatusChange> = this.database.status_changes
       .find()
       .sort({
         atEpochSeconds: "desc",
       })
       .where("atEpochSeconds")
       .gte(latestEpochSeconds + 1)
+      .limit(1)
       .$.pipe(concatAll());
 
     if (latestStatusChanges.length > 0) {
