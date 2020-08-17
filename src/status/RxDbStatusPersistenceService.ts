@@ -14,8 +14,8 @@ import {
 import * as uuid from "uuid";
 import * as pouchDbIdb from "pouchdb-adapter-idb";
 import { Observable, concat, of } from "rxjs";
-import { concatAll, tap } from "rxjs/operators";
-import { startOfToday } from "date-fns";
+import { concatAll } from "rxjs/operators";
+import { startOfToday, startOfDay, endOfDay } from "date-fns";
 
 type StatusChangeMethods = {};
 const statusChangeMethods: StatusChangeMethods = {};
@@ -30,7 +30,7 @@ const statusChangeSchema: RxJsonSchema<StatusChange> = {
       type: "string",
       primary: true,
     },
-    atEpochSeconds: {
+    atEpochMilliseconds: {
       type: "integer",
     },
     presence: {
@@ -40,8 +40,8 @@ const statusChangeSchema: RxJsonSchema<StatusChange> = {
       type: "string",
     },
   },
-  required: ["id", "atEpochSeconds", "presence", "deskPosition"],
-  indexes: ["atEpochSeconds"],
+  required: ["id", "atEpochMilliseconds", "presence", "deskPosition"],
+  indexes: ["atEpochMilliseconds"],
 };
 
 type StatusChangeDocument = RxDocument<StatusChange, StatusChangeMethods>;
@@ -86,7 +86,7 @@ class RxDbStatusPersistenceService implements StatusPersistenceService {
   async statusUpdate(status: StatusUpdate): Promise<void> {
     await this.database.status_changes.insert({
       id: uuid.v4(),
-      atEpochSeconds: Math.max(
+      atEpochMilliseconds: Math.max(
         status.desk.at.getTime(),
         status.presence.at.getTime()
       ),
@@ -98,25 +98,25 @@ class RxDbStatusPersistenceService implements StatusPersistenceService {
   async getStatusObservable(): Promise<Observable<StatusChange>> {
     const latestStatusChanges: StatusChange[] = await this.database.status_changes
       .find()
-      .where("atEpochSeconds")
+      .where("atEpochMilliseconds")
       .gte(startOfToday().getTime())
       .sort({
-        atEpochSeconds: "desc",
+        atEpochMilliseconds: "desc",
       })
       .limit(1)
       .exec();
 
     const latestEpochSeconds =
       latestStatusChanges.length > 0
-        ? latestStatusChanges[0].atEpochSeconds
+        ? latestStatusChanges[0].atEpochMilliseconds
         : startOfToday().getTime();
 
     let statusChangesObservable: Observable<StatusChange> = this.database.status_changes
       .find()
       .sort({
-        atEpochSeconds: "desc",
+        atEpochMilliseconds: "desc",
       })
-      .where("atEpochSeconds")
+      .where("atEpochMilliseconds")
       .gte(latestEpochSeconds + 1)
       .limit(1)
       .$.pipe(concatAll());
@@ -129,6 +129,15 @@ class RxDbStatusPersistenceService implements StatusPersistenceService {
     }
 
     return statusChangesObservable;
+  }
+
+  getAllChangesForDayObservable(day: Date): Observable<StatusChange[]> {
+    return this.database.status_changes
+      .find()
+      .where("atEpochMilliseconds")
+      .gte(startOfDay(day).getTime())
+      .and("atEpochMilliseconds")
+      .lte(endOfDay(day).getTime()).$;
   }
 }
 

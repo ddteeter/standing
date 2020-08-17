@@ -3,7 +3,7 @@ import StatusUpdate from "./StatusUpdate";
 
 type StatusChange = {
   id: string;
-  atEpochSeconds: number;
+  atEpochMilliseconds: number;
   presence: string;
   deskPosition: string;
 };
@@ -12,6 +12,7 @@ interface StatusPersistenceService {
   statusUpdate(status: StatusUpdate): void;
   initialize(): Promise<void>;
   getStatusObservable(): Promise<Observable<StatusChange>>;
+  getAllChangesForDayObservable(day: Date): Observable<StatusChange[]>;
 }
 
 export default StatusPersistenceService;

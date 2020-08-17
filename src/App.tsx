@@ -6,8 +6,8 @@ import PresenceService, {
 } from "./presence/PresenceService";
 import CredentialsService from "./credentials/CredentialsService";
 import Dashboard from "./view/dashboard/Dashboard";
-import { interval, combineLatest, Observable, Subscription } from "rxjs";
-import { map, shareReplay } from "rxjs/operators";
+import { combineLatest, Observable, Subscription, interval } from "rxjs";
+import { map, shareReplay, tap } from "rxjs/operators";
 import Status from "./status/Status";
 import ManualDeskStatusService from "./desk/status/ManualDeskStatusService";
 import { DeskStatus, DeskPosition } from "./desk/status/DeskStatusService";
@@ -29,11 +29,13 @@ import RxDbStatusPersistenceService from "./status/RxDbStatusPersistenceService"
 const credentialsService = new CredentialsService();
 const presenceService: PresenceService = new TogglPresenceService();
 const deskStatusService: ManualDeskStatusService = new ManualDeskStatusService();
-const analyticsService: AnalyticsService = new DefaultAnalyticsService();
+const statusPersistenceService: StatusPersistenceService = new RxDbStatusPersistenceService();
+const analyticsService: AnalyticsService = new DefaultAnalyticsService(
+  statusPersistenceService
+);
 const deskControlService: DeskControlService = new ManualDeskControlService(
   deskStatusService
 );
-const statusPersistenceService: StatusPersistenceService = new RxDbStatusPersistenceService();
 
 const App = (): React.ReactElement => {
   const [statusObservable, setStatusObservable] = useState(
@@ -56,6 +58,20 @@ const App = (): React.ReactElement => {
       deskStatusService.initialize(),
       statusPersistenceService.initialize(),
     ]).then(() => {
+      setAnalyticsObservable(
+        combineLatest(
+          interval(1000),
+          analyticsService.getActiveAnalytics()
+        ).pipe(
+          tap((entry) => {
+            console.log(entry);
+          }),
+          map((entry: [number, Analytics]) => {
+            return entry[1];
+          })
+        )
+      );
+
       combineLatest(
         presenceService.getObservable(),
         deskStatusService.getObservable()
@@ -80,7 +96,7 @@ const App = (): React.ReactElement => {
           >(1)(statusObservable).pipe(
             map((observation: StatusChange) => {
               return {
-                at: new Date(observation.atEpochSeconds),
+                at: new Date(observation.atEpochMilliseconds),
                 presence:
                   Presence[observation.presence as keyof typeof Presence],
                 deskPosition:
@@ -100,10 +116,6 @@ const App = (): React.ReactElement => {
         statusSubscription.unsubscribe();
       }
     };
-  }, []);
-
-  useEffect(() => {
-    setAnalyticsObservable(analyticsService.getActiveAnalytics());
   }, []);
 
   return (
