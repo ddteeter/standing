@@ -69,6 +69,7 @@ class DefaultAnalyticsService implements AnalyticsService {
                   currentPresentPeriod.end = new Date(
                     statusChange.atEpochMilliseconds
                   );
+                  currentPresentPeriod = null;
                 }
               }
             });

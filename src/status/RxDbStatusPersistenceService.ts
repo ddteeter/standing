@@ -84,6 +84,15 @@ class RxDbStatusPersistenceService implements StatusPersistenceService {
   }
 
   async statusUpdate(status: StatusUpdate): Promise<void> {
+    console.log({
+      id: uuid.v4(),
+      atEpochMilliseconds: Math.max(
+        status.desk.at.getTime(),
+        status.presence.at.getTime()
+      ),
+      presence: status.presence.presence,
+      deskPosition: status.desk.position,
+    });
     await this.database.status_changes.insert({
       id: uuid.v4(),
       atEpochMilliseconds: Math.max(
