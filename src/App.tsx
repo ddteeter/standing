@@ -58,19 +58,7 @@ const App = (): React.ReactElement => {
       deskStatusService.initialize(),
       statusPersistenceService.initialize(),
     ]).then(() => {
-      setAnalyticsObservable(
-        combineLatest(
-          interval(1000),
-          analyticsService.getActiveAnalytics()
-        ).pipe(
-          tap((entry) => {
-            console.log(entry);
-          }),
-          map((entry: [number, Analytics]) => {
-            return entry[1];
-          })
-        )
-      );
+      setAnalyticsObservable(analyticsService.getActiveAnalytics());
 
       combineLatest(
         presenceService.getObservable(),

@@ -132,12 +132,14 @@ class RxDbStatusPersistenceService implements StatusPersistenceService {
   }
 
   getAllChangesForDayObservable(day: Date): Observable<StatusChange[]> {
-    return this.database.status_changes
-      .find()
-      .where("atEpochMilliseconds")
-      .gte(startOfDay(day).getTime())
-      .and("atEpochMilliseconds")
-      .lte(endOfDay(day).getTime()).$;
+    return (
+      // .and("atEpochMilliseconds")
+      // .lte(endOfDay(day).getTime())
+      this.database.status_changes
+        .find()
+        .where("atEpochMilliseconds")
+        .gte(startOfDay(day).getTime()).$
+    );
   }
 }
 

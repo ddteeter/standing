@@ -1,5 +1,5 @@
 import Analytics from "./Analytics";
-import { Observable } from "rxjs";
+import { Observable, interval, combineLatest } from "rxjs";
 import StatusPersistenceService, {
   StatusChange,
 } from "../status/StatusPersistenceService";
@@ -24,80 +24,90 @@ class DefaultAnalyticsService implements AnalyticsService {
   ) {}
 
   getActiveAnalytics(): Observable<Analytics> {
-    return this.statusPersistenceService
-      .getAllChangesForDayObservable(new Date())
-      .pipe(
-        map((statusChanges: StatusChange[]) => {
-          console.log(statusChanges);
-          let currentPresentPeriod: PresentPeriod | null = null;
+    return combineLatest(
+      interval(1000),
+      this.statusPersistenceService
+        .getAllChangesForDayObservable(new Date())
+        .pipe(
+          map((statusChanges: StatusChange[]) => {
+            let currentPresentPeriod: PresentPeriod | null = null;
 
-          const presentPeriods: PresentPeriod[] = [];
-          statusChanges.forEach((statusChange: StatusChange) => {
-            if (statusChange.presence === Presence.PRESENT) {
-              let createNew = false;
+            const presentPeriods: PresentPeriod[] = [];
+            statusChanges.forEach((statusChange: StatusChange) => {
+              if (statusChange.presence === Presence.PRESENT) {
+                let createNew = false;
 
-              if (
-                currentPresentPeriod &&
-                currentPresentPeriod.deskPosition !==
-                  DeskPosition[
-                    statusChange.deskPosition as keyof typeof DeskPosition
-                  ]
-              ) {
-                currentPresentPeriod.end = new Date(
-                  statusChange.atEpochMilliseconds
-                );
-
-                createNew = true;
-              } else if (!currentPresentPeriod) {
-                createNew = true;
-              }
-
-              if (createNew) {
-                currentPresentPeriod = {
-                  start: new Date(statusChange.atEpochMilliseconds),
-                  deskPosition:
+                if (
+                  currentPresentPeriod &&
+                  currentPresentPeriod.deskPosition !==
                     DeskPosition[
                       statusChange.deskPosition as keyof typeof DeskPosition
-                    ],
-                };
-
-                presentPeriods.push(currentPresentPeriod);
-              }
-            } else {
-              if (currentPresentPeriod) {
-                currentPresentPeriod.end = new Date(
-                  statusChange.atEpochMilliseconds
-                );
-              }
-            }
-          });
-
-          return {
-            standingTime: presentPeriods.reduce(
-              (totalStandingTime, presentPeriod) => {
-                if (presentPeriod.deskPosition === DeskPosition.STANDING) {
-                  return (
-                    totalStandingTime +
-                    differenceInSeconds(
-                      presentPeriod.start,
-                      presentPeriod.end || new Date()
-                    )
+                    ]
+                ) {
+                  currentPresentPeriod.end = new Date(
+                    statusChange.atEpochMilliseconds
                   );
-                } else {
-                  return totalStandingTime;
+
+                  createNew = true;
+                } else if (!currentPresentPeriod) {
+                  createNew = true;
                 }
-              },
-              0
-            ),
-            totalTime: presentPeriods.reduce((totalTime, presentPeriod) => {
-              return (
-                totalTime +
-                differenceInSeconds(presentPeriod.start, presentPeriod.end)
-              );
-            }, 0),
-          };
-        })
-      );
+
+                if (createNew) {
+                  currentPresentPeriod = {
+                    start: new Date(statusChange.atEpochMilliseconds),
+                    deskPosition:
+                      DeskPosition[
+                        statusChange.deskPosition as keyof typeof DeskPosition
+                      ],
+                  };
+
+                  presentPeriods.push(currentPresentPeriod);
+                }
+              } else {
+                if (currentPresentPeriod) {
+                  currentPresentPeriod.end = new Date(
+                    statusChange.atEpochMilliseconds
+                  );
+                }
+              }
+            });
+
+            return presentPeriods;
+          })
+        )
+    ).pipe(
+      map((observation: [number, PresentPeriod[]]) => {
+        const presentPeriods = observation[1];
+        return {
+          standingTime: presentPeriods.reduce(
+            (totalStandingTime, presentPeriod) => {
+              if (presentPeriod.deskPosition === DeskPosition.STANDING) {
+                return (
+                  totalStandingTime +
+                  differenceInSeconds(
+                    presentPeriod.end || new Date(),
+                    presentPeriod.start
+                  )
+                );
+              } else {
+                return totalStandingTime;
+              }
+            },
+            0
+          ),
+          totalTime: presentPeriods.reduce((totalTime, presentPeriod) => {
+            return (
+              totalTime +
+              differenceInSeconds(
+                presentPeriod.end || new Date(),
+                presentPeriod.start
+              )
+            );
+          }, 0),
+        };
+      })
+    );
   }
 }
 

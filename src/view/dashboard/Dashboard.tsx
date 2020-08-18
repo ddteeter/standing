@@ -70,7 +70,7 @@ const Dashboard = (): React.ReactElement => {
         label="Remaining to Goal"
         transform={(): EntryDisplayable => {
           return {
-            value: formatSeconds(analytics.standingTime),
+            value: "N/A",
           };
         }}
       />
