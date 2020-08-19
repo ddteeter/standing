@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import DashboardEntry from "./DashboardEntry";
-import { Status } from "../../status/Status";
+import Status from "../../status/Status";
 import {
   displayable as displayableDeskPosition,
   invert,
@@ -24,13 +24,13 @@ const Dashboard = (): React.ReactElement => {
 
   const [deskPosition, setDeskPosition] = useState(null);
   const [analytics, setAnalytics] = useState({
-    sittingTime: 0,
+    totalTime: 0,
     standingTime: 0,
   });
 
   useEffect(() => {
     const subscription = statusContext.subscribe((status) => {
-      setDeskPosition(status.desk.position);
+      setDeskPosition(status.deskPosition);
     });
 
     return (): void => {
@@ -62,7 +62,7 @@ const Dashboard = (): React.ReactElement => {
         label="Sitting Time"
         transform={(): EntryDisplayable => {
           return {
-            value: formatSeconds(analytics.sittingTime),
+            value: formatSeconds(analytics.totalTime - analytics.standingTime),
           };
         }}
       />
@@ -70,7 +70,7 @@ const Dashboard = (): React.ReactElement => {
         label="Remaining to Goal"
         transform={(): EntryDisplayable => {
           return {
-            value: formatSeconds(analytics.standingTime),
+            value: "N/A",
           };
         }}
       />
@@ -91,9 +91,9 @@ const Dashboard = (): React.ReactElement => {
         label="Desk Position"
         transform={(status: Status): EntryDisplayable => {
           return {
-            value: displayableDeskPosition(status.desk.position),
+            value: displayableDeskPosition(status.deskPosition),
             color:
-              status.desk.position == DeskPosition.SITTING
+              status.deskPosition == DeskPosition.SITTING
                 ? "text-red-600"
                 : "text-green-600",
           };
@@ -103,9 +103,9 @@ const Dashboard = (): React.ReactElement => {
         label="Status"
         transform={(status: Status): EntryDisplayable => {
           return {
-            value: displayablePresence(status.presence.presence),
+            value: displayablePresence(status.presence),
             color:
-              status.presence.presence == Presence.ABSENT
+              status.presence == Presence.ABSENT
                 ? "text-red-600"
                 : "text-green-600",
           };

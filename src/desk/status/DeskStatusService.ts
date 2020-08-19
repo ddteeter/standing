@@ -11,8 +11,8 @@ class DeskStatus {
 }
 
 enum DeskPosition {
-  SITTING,
-  STANDING,
+  SITTING = "SITTING",
+  STANDING = "STANDING",
 }
 
 const displayable = (position: DeskPosition): string => {

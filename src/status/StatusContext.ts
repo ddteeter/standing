@@ -1,4 +1,4 @@
-import { Status } from "./Status";
+import Status from "./Status";
 import { Observable } from "rxjs";
 import React from "react";
 
