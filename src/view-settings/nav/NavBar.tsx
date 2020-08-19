@@ -1,6 +1,15 @@
 import * as React from "react";
 
-const NavBar = (): React.ReactElement => {
+enum Page {
+  DESK,
+  PRESENCE,
+}
+
+interface Props {
+  selectPage: (page: Page) => void;
+}
+
+const NavBar = ({ selectPage }: Props): React.ReactElement<Props> => {
   return (
     <div className="fixed top-0 w-full bg-gray-600 p-2">
       <nav>
@@ -9,6 +18,7 @@ const NavBar = (): React.ReactElement => {
             <a
               className="text-gray-100 hover:text-blue-400 active:text-blue-700 focus:outline-none focus:text-blue-400"
               href="#"
+              onClick={(): void => selectPage(Page.DESK)}
             >
               Desk
             </a>
@@ -17,6 +27,7 @@ const NavBar = (): React.ReactElement => {
             <a
               className="text-gray-100 hover:text-blue-400 active:text-blue-700 focus:outline-none focus:text-blue-400"
               href="#"
+              onClick={(): void => selectPage(Page.PRESENCE)}
             >
               Presence
             </a>
@@ -28,3 +39,4 @@ const NavBar = (): React.ReactElement => {
 };
 
 export default NavBar;
+export { Page };
