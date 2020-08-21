@@ -53,12 +53,12 @@ const Input = ({
             .concat(error ? ["shadow-outline-red", "border-red-400"] : [])
             .join(" ")}
         />
-        {error && error.type === "required" && (
-          <span className="text-sm text-red-400" role="alert">
-            {label} is required
-          </span>
-        )}
       </div>
+      {error && error.type === "required" && (
+        <div className="text-sm text-red-400" role="alert">
+          {label} is required
+        </div>
+      )}
     </>
   );
 };

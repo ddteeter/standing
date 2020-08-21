@@ -4,20 +4,31 @@ type Props = {
   label: string;
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
+  onClick?: () => void;
 };
 
 const SecondaryButton = ({
   label,
   type,
   disabled,
+  onClick,
 }: Props): React.ReactElement<Props> => {
+  const buttonType = type || "button";
+
   return (
     <div className="flex justify-start">
       <span className="inline-flex rounded-md shadow-sm">
         <button
+          onClick={(event): void => {
+            if (onClick) {
+              if (buttonType !== "submit") {
+                event.preventDefault();
+              }
+            }
+          }}
           // Intentionally not using disabled, since it kind of seems to break tabbing
           // disabled={disabled}
-          type={type || "button"}
+          type={buttonType}
           className={[
             "py-2",
             "px-3",
