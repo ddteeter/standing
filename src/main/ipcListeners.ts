@@ -35,6 +35,7 @@ const initialize = (): void => {
 
       settingsWindow.on("ready-to-show", () => {
         settingsWindow.show();
+        settingsWindow.webContents.openDevTools({ mode: "detach" });
       });
 
       settingsWindow.on("closed", () => {

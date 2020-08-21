@@ -11,7 +11,7 @@ interface Props {
 
 const NavBar = ({ selectPage }: Props): React.ReactElement<Props> => {
   return (
-    <div className="fixed top-0 w-full bg-gray-600 p-2">
+    <div className="w-full bg-gray-600 p-2">
       <nav>
         <ul className="flex">
           <li className="mr-4">

@@ -25,7 +25,7 @@ const Settings = (): React.ReactElement => {
   return (
     <div>
       <NavBar selectPage={setPage} />
-      <main>{renderPage(page)}</main>
+      <div>{renderPage(page)}</div>
     </div>
   );
 };

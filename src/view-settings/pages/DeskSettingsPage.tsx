@@ -1,68 +1,78 @@
 import * as React from "react";
-import NavBar from "../../view/nav/NavBar";
+import Input from "../../forms/Input";
+import SecondaryButton from "../../forms/SecondaryButton";
+import { useForm } from "react-hook-form";
+
+type ParticleCredentials = {
+  particleUsername: string;
+  particlePassword: string;
+};
 
 const DeskSettingsPage = (): React.ReactElement => {
+  const { register, handleSubmit, errors } = useForm({
+    mode: "onBlur",
+  });
+
+  const onCredentialsSubmit = (data: {
+    particleUsername: string;
+    particlePassword: string;
+  }): void => {
+    console.log(data);
+  };
+
   return (
-    <>
-      <form>
+    <div className="mx-auto w-10/12 p-4">
+      <form onSubmit={handleSubmit(onCredentialsSubmit)}>
         <div>
           <div>
             <div>
               <h3 className="text-lg leading-6 font-medium text-gray-900">
-                Login
+                Particle Credentials
               </h3>
               <p className="mt-1 text-sm leading-5 text-gray-500">
-                Configure your credentials for your Particle account (they will
+                Configure the credentials for your Particle account. They will
                 be stored securely using your operating system password storage
-                mechanism).
+                mechanism.
               </p>
             </div>
-            <div className="mt-6 grid grid-cols-1 row-gap-6 col-gap-4 sm:grid-cols-6">
-              <div className="sm:col-span-4">
-                <label
-                  htmlFor="username"
-                  className="block text-sm font-medium leading-5 text-gray-700"
-                >
-                  Username
-                </label>
-                <div className="mt-1 rounded-md shadow-sm">
-                  <input
-                    id="username"
-                    className="form-input block w-full min-w-0 rounded-none rounded-r-md transition duration-150 ease-in-out sm:text-sm sm:leading-5"
-                  ></input>
-                </div>
+            <div>
+              <div className="mt-4">
+                <Input
+                  register={register({
+                    required: true,
+                  })}
+                  error={errors.particleUsername}
+                  label="Username"
+                  id="particleUsername"
+                  required={true}
+                />
               </div>
 
-              <div className="sm:col-span-6">
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium leading-5 text-gray-700"
-                >
-                  Password
-                </label>
-                <div className="mt-1 rounded-md shadow-sm">
-                  <input
-                    id="password"
-                    type="password"
-                    required
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
-                  />
-                </div>
+              <div className="mt-4">
+                <Input
+                  register={register({
+                    required: true,
+                  })}
+                  error={errors.particlePassword}
+                  label="Password"
+                  id="particlePassword"
+                  required={true}
+                  type="password"
+                />
               </div>
             </div>
-            <div className="mt-8 border-t border-gray-200 pt-5">
-              <div className="flex justify-start">
-                <span className="ml-3 inline-flex rounded-md shadow-sm">
-                  <button
-                    type="button"
-                    className="py-2 px-3 border border-gray-300 rounded-md text-sm leading-4 font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-50 active:text-gray-800 transition duration-150 ease-in-out"
-                  >
-                    Try Connecting
-                  </button>
-                </span>
-              </div>
+            <div className="mt-4 pt-5">
+              <SecondaryButton
+                disabled={errors && Object.keys(errors).length > 0}
+                type="submit"
+                label="Try Connecting"
+              />
             </div>
           </div>
+        </div>
+      </form>
+      <form>
+        <div>
           <div className="mt-8 border-t border-gray-200 pt-8">
             <div>
               <h3 className="text-lg leading-6 font-medium text-gray-900">
@@ -222,7 +232,7 @@ const DeskSettingsPage = (): React.ReactElement => {
           </div>
         </div>
       </form>
-    </>
+    </div>
   );
 };
 
