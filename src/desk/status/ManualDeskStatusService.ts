@@ -22,10 +22,6 @@ class ManualDeskStatusService implements DeskStatusService {
       at: new Date(),
     });
   }
-
-  initialize(): Promise<void> {
-    return Promise.resolve();
-  }
 }
 
 export default ManualDeskStatusService;

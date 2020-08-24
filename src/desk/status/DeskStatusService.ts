@@ -2,7 +2,6 @@ import { Observable } from "rxjs";
 
 interface DeskStatusService {
   getObservable(): Observable<DeskStatus>;
-  initialize(): Promise<void>;
 }
 
 class DeskStatus {

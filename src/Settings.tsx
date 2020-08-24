@@ -1,6 +1,10 @@
 import * as React from "react";
 import NavBar, { Page } from "./view-settings/nav/NavBar";
 import DeskSettingsPage from "./view-settings/pages/DeskSettingsPage";
+import CredentialsService from "./credentials/CredentialsService";
+import CredentialsServiceContext from "./credentials/CredentialsServiceContext";
+
+const credentialsService: CredentialsService = new CredentialsService();
 
 const Settings = (): React.ReactElement => {
   const [page, setPage] = React.useState(Page.DESK);
@@ -23,10 +27,10 @@ const Settings = (): React.ReactElement => {
   };
 
   return (
-    <div>
+    <CredentialsServiceContext.Provider value={credentialsService}>
       <NavBar selectPage={setPage} />
       <div>{renderPage(page)}</div>
-    </div>
+    </CredentialsServiceContext.Provider>
   );
 };
 

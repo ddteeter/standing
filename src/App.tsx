@@ -6,8 +6,8 @@ import PresenceService, {
 } from "./presence/PresenceService";
 import CredentialsService from "./credentials/CredentialsService";
 import Dashboard from "./view/dashboard/Dashboard";
-import { combineLatest, Observable, Subscription, interval } from "rxjs";
-import { map, shareReplay, tap } from "rxjs/operators";
+import { combineLatest, Observable, Subscription } from "rxjs";
+import { map, shareReplay } from "rxjs/operators";
 import Status from "./status/Status";
 import ManualDeskStatusService from "./desk/status/ManualDeskStatusService";
 import { DeskStatus, DeskPosition } from "./desk/status/DeskStatusService";
@@ -25,11 +25,15 @@ import StatusPersistenceService, {
   StatusChange,
 } from "./status/StatusPersistenceService";
 import RxDbStatusPersistenceService from "./status/RxDbStatusPersistenceService";
+import RxDbPersistenceService from "./persistence/RxDbPersistenceService";
 
 const credentialsService = new CredentialsService();
 const presenceService: PresenceService = new TogglPresenceService();
 const deskStatusService: ManualDeskStatusService = new ManualDeskStatusService();
-const statusPersistenceService: StatusPersistenceService = new RxDbStatusPersistenceService();
+const rxDbPersistenceService: RxDbPersistenceService = new RxDbPersistenceService();
+const statusPersistenceService: StatusPersistenceService = new RxDbStatusPersistenceService(
+  rxDbPersistenceService
+);
 const analyticsService: AnalyticsService = new DefaultAnalyticsService(
   statusPersistenceService
 );
@@ -55,7 +59,7 @@ const App = (): React.ReactElement => {
 
     Promise.all([
       presenceService.initialize(credentialsService),
-      deskStatusService.initialize(),
+      rxDbPersistenceService.initialize(),
       statusPersistenceService.initialize(),
     ]).then(() => {
       setAnalyticsObservable(analyticsService.getActiveAnalytics());
