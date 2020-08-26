@@ -1,6 +1,10 @@
 import { app } from "electron";
 import { menubar } from "menubar";
 import { initialize as initializeIPCListeners } from "./main/ipcListeners";
+// TODO: development only
+import installExtension, {
+  REACT_DEVELOPER_TOOLS,
+} from "electron-devtools-installer";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any;
@@ -29,4 +33,10 @@ if (require("electron-squirrel-startup")) {
 
 mb.on("after-create-window", () => {
   mb.window.webContents.openDevTools({ mode: "detach" });
+});
+
+app.whenReady().then(() => {
+  installExtension(REACT_DEVELOPER_TOOLS).catch((error: unknown) =>
+    console.error("Unable to install React Developer Tools:", error)
+  );
 });

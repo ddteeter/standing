@@ -108,6 +108,7 @@ export default class RxDbPersistenceService {
       this.database = await createRxDatabase<DatabaseCollections>({
         name: "withstanding_db",
         adapter: "idb",
+        multiInstance: true,
       });
 
       await this.database.collection({

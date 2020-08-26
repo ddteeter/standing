@@ -15,8 +15,8 @@ class RxDbStatusPersistenceService implements StatusPersistenceService {
     this.persistenceService = persistenceService;
   }
 
-  async initialize(): Promise<void> {
-    await this.persistenceService.initialize();
+  initialize(): Promise<void> {
+    return Promise.resolve();
   }
 
   async statusUpdate(status: StatusUpdate): Promise<void> {

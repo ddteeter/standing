@@ -28,8 +28,8 @@ class DefaultSettingsService implements SettingsService {
     this.persistenceService = persistenceService;
   }
 
-  async initialize(): Promise<void> {
-    await this.persistenceService.initialize();
+  initialize(): Promise<void> {
+    return Promise.resolve();
   }
 
   showSettings(): void {

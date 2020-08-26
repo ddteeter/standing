@@ -11,12 +11,13 @@ type Props = {
 };
 
 type PositionSettings = {
-  standingHeight: string;
-  sittingHeight: string;
+  standingHeight: number;
+  sittingHeight: number;
 };
 
 const GeekdeskDeskSettingsForm = ({
   onSettingsSubmit,
+  geekdeskService,
 }: Props): React.ReactElement<Props> => {
   const { register, handleSubmit, errors, setValue } = useForm<
     PositionSettings
@@ -28,14 +29,13 @@ const GeekdeskDeskSettingsForm = ({
     onSettingsSubmit(data);
   };
 
-  const readPositionInto = (field: string): void => {
-    // Get value
-    setValue(field, "5");
+  const readPositionInto = async (field: string): Promise<void> => {
+    setValue(field, await geekdeskService.getCurrentHeight());
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="mt-8 border-t border-gray-200 pt-8">
+      <div className="mt-4">
         <div>
           <h3 className="text-lg leading-6 font-medium text-gray-900">
             Position Settings
@@ -50,6 +50,7 @@ const GeekdeskDeskSettingsForm = ({
               register={register({
                 required: true,
               })}
+              type="number"
               error={errors.standingHeight}
               label="Standing Height"
               id="standingHeight"
@@ -58,7 +59,9 @@ const GeekdeskDeskSettingsForm = ({
             <div className="mt-4">
               <SecondaryButton
                 label="Read Current Position"
-                onClick={(): void => readPositionInto("standingHeight")}
+                onClick={async (): Promise<void> =>
+                  await readPositionInto("standingHeight")
+                }
               />
             </div>
           </div>
@@ -68,6 +71,7 @@ const GeekdeskDeskSettingsForm = ({
               register={register({
                 required: true,
               })}
+              type="number"
               error={errors.sittingHeight}
               label="Sitting Height"
               id="sittingHeight"
@@ -76,7 +80,9 @@ const GeekdeskDeskSettingsForm = ({
             <div className="mt-4">
               <SecondaryButton
                 label="Read Current Position"
-                onClick={(): void => readPositionInto("sittingHeight")}
+                onClick={async (): Promise<void> =>
+                  await readPositionInto("sittingHeight")
+                }
               />
             </div>
           </div>
@@ -94,3 +100,4 @@ const GeekdeskDeskSettingsForm = ({
 };
 
 export default GeekdeskDeskSettingsForm;
+export { PositionSettings };

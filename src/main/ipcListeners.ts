@@ -34,6 +34,12 @@ const initialize = (): void => {
     );
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ipcMain.handle("removePassword", (event: any, msg: any) => {
+    const payload: SetPasswordRequest = msg;
+    return keytar.deletePassword(payload.service, payload.account);
+  });
+
   ipcMain.handle("showSettings", () => {
     if (settingsWindow) {
       settingsWindow.show();

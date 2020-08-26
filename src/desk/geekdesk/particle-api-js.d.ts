@@ -28,6 +28,17 @@ declare module "particle-api-js" {
     };
   };
 
+  type FunctionResponse = {
+    id: string;
+    name: string;
+    connected: boolean;
+    return_value: number;
+  };
+
+  type AccessTokenResponse = {
+    access_token: string;
+  };
+
   declare class Particle {
     constructor(options?: {
       baseUrl?: string;
@@ -42,9 +53,15 @@ declare module "particle-api-js" {
       password: string;
       tokenDuration?: number;
       headers?: { [string]: string };
-    }): Promise<{ body: { access_token: string } }>;
+    }): Promise<{ body: AccessTokenResponse }>;
 
-    getDevices(options: {
+    sendOtp(options: {
+      mfaToken: string;
+      otp: string;
+      headers?: { [string]: string };
+    }): Promise<{ body: AccessTokenResponse }>;
+
+    listDevices(options: {
       deviceId?: string;
       deviceName?: string;
       groups?: string[];
@@ -55,15 +72,16 @@ declare module "particle-api-js" {
       product?: string;
       auth: string;
       headers?: { [string]: string };
-    }): Promise<Device[]>;
+    }): Promise<{ body: Device[] }>;
 
-    getVariable(options: {
+    callFunction(options: {
       deviceId: string;
       name: string;
+      argument: string;
       product?: string;
       auth: string;
-      headers: { [string]: string };
-    }): Promise<string>;
+      headers?: { [string]: string };
+    }): Promise<{ body: FunctionResponse }>;
   }
 
   export default Particle;

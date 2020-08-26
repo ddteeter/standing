@@ -28,4 +28,11 @@ export default class CredentialService {
       password,
     });
   }
+
+  async removeCredentials(service: string, account: string): Promise<void> {
+    await ipcRenderer.invoke("removePassword", {
+      service,
+      account,
+    });
+  }
 }

@@ -2,7 +2,7 @@ import * as React from "react";
 import SecondaryButton from "../../forms/SecondaryButton";
 import { useForm } from "react-hook-form";
 import { GeekdeskService, Device } from "../../desk/geekdesk/GeekdeskService";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Select from "../../forms/Select";
 
 type Props = {
@@ -24,12 +24,13 @@ const GeekdeskCredentialsForm = ({
     mode: "onBlur",
   });
 
-  useEffect((): void => {
-    const loadDevices = async (): Promise<void> => {
-      setAvailableDevices(await geekdeskService.getDevices());
-    };
-    loadDevices();
+  const loadDevices = useCallback(async (): Promise<void> => {
+    setAvailableDevices(await geekdeskService.getDevices());
   }, [geekdeskService]);
+
+  useEffect((): void => {
+    loadDevices();
+  }, [loadDevices]);
 
   const handleFormSubmit = (data: DeviceForm): void => {
     onDeviceSelected(data.id);
@@ -37,7 +38,7 @@ const GeekdeskCredentialsForm = ({
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)}>
-      <div>
+      <div className="mt-8 border-t border-gray-200 pt-8">
         <div>
           <h3 className="text-lg leading-6 font-medium text-gray-900">
             Connected Device
@@ -47,28 +48,37 @@ const GeekdeskCredentialsForm = ({
             height status.
           </p>
         </div>
-        <div>
+        <div className="mt-4">
           <div className="col-span-6 sm:col-span-3">
             <Select
-              id="device"
+              id="id"
               label="Device"
               required={true}
               error={errors.id}
-              register={register}
+              register={register({ required: true })}
             >
               {availableDevices.map((availableDevice) => {
-                <option value={availableDevice.id}>
-                  {availableDevice.name}
-                </option>;
+                return (
+                  <option key={availableDevice.id} value={availableDevice.id}>
+                    {availableDevice.name}
+                  </option>
+                );
               })}
             </Select>
           </div>
         </div>
-        <div className="mt-4">
+        <div className="mt-4 flex">
           <SecondaryButton
             disabled={errors && Object.keys(errors).length > 0}
             type="submit"
-            label="Save and Connect"
+            label="Connect to Device"
+          />
+          <SecondaryButton
+            className="ml-4"
+            label="Refresh"
+            onClick={(): void => {
+              loadDevices();
+            }}
           />
         </div>
       </div>

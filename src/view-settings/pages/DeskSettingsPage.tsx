@@ -2,16 +2,31 @@ import * as React from "react";
 import { useState } from "react";
 import GeekdeskCredentialsForm from "../forms/GeekdeskCredentialsForm";
 import GeekdeskDevicesForm from "../forms/GeekdeskDevicesForm";
-import DefaultGeekdeskService from "../../desk/geekdesk/GeekdeskService";
-import GeekdeskDeskSettingsForm from "../forms/GeekdeskDeskSettingsForm";
+import { GeekdeskService } from "../../desk/geekdesk/GeekdeskService";
+import GeekdeskDeskSettingsForm, {
+  PositionSettings,
+} from "../forms/GeekdeskDeskSettingsForm";
 
-const DeskSettingsPage = (): React.ReactElement => {
+type Props = {
+  geekdeskService: GeekdeskService;
+};
+
+const DeskSettingsPage = ({
+  geekdeskService,
+}: Props): React.ReactElement<Props> => {
   const [connected, setConnected] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
-  const geekdeskService = new DefaultGeekdeskService();
 
-  const onSettingsSubmit = (data: {}): void => {
-    console.log(data);
+  const onSettingsSubmit = (positionSettings: PositionSettings): void => {
+    geekdeskService.setHeights(
+      positionSettings.sittingHeight,
+      positionSettings.standingHeight
+    );
+  };
+
+  const deviceSelected = (deviceId: string): void => {
+    geekdeskService.setDevice(deviceId);
+    setSelectedDevice(deviceId);
   };
 
   return (
@@ -20,14 +35,12 @@ const DeskSettingsPage = (): React.ReactElement => {
         setConnected={setConnected}
         geekdeskService={geekdeskService}
       />
-      (connected &&
-      <GeekdeskDevicesForm
-        geekdeskService={geekdeskService}
-        onDeviceSelected={(deviceId: string): void => {
-          setSelectedDevice(deviceId);
-        }}
-      />
-      )
+      {connected && (
+        <GeekdeskDevicesForm
+          geekdeskService={geekdeskService}
+          onDeviceSelected={deviceSelected}
+        />
+      )}
       {connected && selectedDevice && (
         <GeekdeskDeskSettingsForm
           geekdeskService={geekdeskService}

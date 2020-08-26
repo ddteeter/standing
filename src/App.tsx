@@ -26,6 +26,10 @@ import StatusPersistenceService, {
 } from "./status/StatusPersistenceService";
 import RxDbStatusPersistenceService from "./status/RxDbStatusPersistenceService";
 import RxDbPersistenceService from "./persistence/RxDbPersistenceService";
+import SettingsService, {
+  DefaultSettingsService,
+} from "./settings/SettingsService";
+import SettingsServiceContext from "./settings/SettingsServiceContext";
 
 const credentialsService = new CredentialsService();
 const presenceService: PresenceService = new TogglPresenceService();
@@ -39,6 +43,9 @@ const analyticsService: AnalyticsService = new DefaultAnalyticsService(
 );
 const deskControlService: DeskControlService = new ManualDeskControlService(
   deskStatusService
+);
+const settingsService: SettingsService = new DefaultSettingsService(
+  rxDbPersistenceService
 );
 
 const App = (): React.ReactElement => {
@@ -111,14 +118,16 @@ const App = (): React.ReactElement => {
   }, []);
 
   return (
-    <DeskControlServiceContext.Provider value={deskControlService}>
-      <StatusContext.Provider value={statusObservable}>
-        <AnalyticsContext.Provider value={analyticsObservable}>
-          <Dashboard />
-          <NavBar />
-        </AnalyticsContext.Provider>
-      </StatusContext.Provider>
-    </DeskControlServiceContext.Provider>
+    <SettingsServiceContext.Provider value={settingsService}>
+      <DeskControlServiceContext.Provider value={deskControlService}>
+        <StatusContext.Provider value={statusObservable}>
+          <AnalyticsContext.Provider value={analyticsObservable}>
+            <Dashboard />
+            <NavBar />
+          </AnalyticsContext.Provider>
+        </StatusContext.Provider>
+      </DeskControlServiceContext.Provider>
+    </SettingsServiceContext.Provider>
   );
 };
 

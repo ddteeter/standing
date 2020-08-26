@@ -13,6 +13,7 @@ type Props = {
 const Select = ({
   id,
   label,
+  required,
   register,
   error,
   children,
@@ -28,8 +29,10 @@ const Select = ({
         Device
       </label>
       <select
-        id={id}
+        name={id}
         ref={register}
+        required={required}
+        aria-invalid={error ? "true" : "false"}
         className={[
           "mt-1",
           "block",
