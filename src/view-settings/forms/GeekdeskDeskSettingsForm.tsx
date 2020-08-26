@@ -6,8 +6,9 @@ import Input from "../../forms/Input";
 
 type Props = {
   geekdeskService: GeekdeskService;
-  onSettingsSubmit(positionSettings: PositionSettings): void;
-  selectedDevice: string;
+  onSettingsSubmit(positionSettings: PositionSettings): Promise<boolean>;
+  initialSittingHeight: number;
+  initialStandingHeight: number;
 };
 
 type PositionSettings = {
@@ -18,15 +19,21 @@ type PositionSettings = {
 const GeekdeskDeskSettingsForm = ({
   onSettingsSubmit,
   geekdeskService,
+  initialSittingHeight,
+  initialStandingHeight,
 }: Props): React.ReactElement<Props> => {
   const { register, handleSubmit, errors, setValue } = useForm<
     PositionSettings
   >({
     mode: "onBlur",
+    defaultValues: {
+      sittingHeight: initialSittingHeight,
+      standingHeight: initialStandingHeight,
+    },
   });
 
-  const onSubmit = (data: PositionSettings): void => {
-    onSettingsSubmit(data);
+  const onSubmit = async (data: PositionSettings): Promise<void> => {
+    await onSettingsSubmit(data);
   };
 
   const readPositionInto = async (field: string): Promise<void> => {

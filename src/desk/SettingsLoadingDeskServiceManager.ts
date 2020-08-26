@@ -1,4 +1,7 @@
-import { GeekdeskServiceInitializer } from "./geekdesk/GeekdeskService";
+import {
+  GeekdeskServiceInitializer,
+  SETTINGS_TYPE,
+} from "./geekdesk/GeekdeskService";
 import SettingsService, { ResolvedSettings } from "../settings/SettingsService";
 import ManualDeskStatusService from "./status/ManualDeskStatusService";
 import ManualDeskControlService from "./control/ManualDeskControlService";
@@ -10,9 +13,9 @@ import CredentialsService from "../credentials/CredentialsService";
 class DefaultDeskServiceInitializer implements DeskServiceInitializer {
   initialize(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    credentialsService: CredentialsService,
+    _credentialsService: CredentialsService,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    settingsService: SettingsService
+    _settingsService: SettingsService
   ): Promise<InitializedDeskServices> {
     const defaultStatusService: ManualDeskStatusService = new ManualDeskStatusService();
     return Promise.resolve({
@@ -23,7 +26,7 @@ class DefaultDeskServiceInitializer implements DeskServiceInitializer {
 }
 
 const TYPE_TO_INITIALIZER = new Map<string, DeskServiceInitializer>();
-TYPE_TO_INITIALIZER.set("geekdesk", new GeekdeskServiceInitializer());
+TYPE_TO_INITIALIZER.set(SETTINGS_TYPE, new GeekdeskServiceInitializer());
 
 export default class SettingsLoadingDeskServiceManager {
   constructor(

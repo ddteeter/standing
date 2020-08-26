@@ -84,6 +84,7 @@ class DefaultSettingsService implements SettingsService {
   ): Promise<void> {
     await this.persistenceService.getDatabase().settings.upsert({
       type: type,
+      active: active,
       values: settings,
     });
     // Update all other settings to inactive

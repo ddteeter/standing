@@ -10,7 +10,10 @@ import { combineLatest, Observable, Subscription } from "rxjs";
 import { map, shareReplay } from "rxjs/operators";
 import Status from "./status/Status";
 import ManualDeskStatusService from "./desk/status/ManualDeskStatusService";
-import { DeskStatus, DeskPosition } from "./desk/status/DeskStatusService";
+import DeskStatusService, {
+  DeskStatus,
+  DeskPosition,
+} from "./desk/status/DeskStatusService";
 import NavBar from "./view/nav/NavBar";
 import StatusContext from "./status/StatusContext";
 import Analytics from "./analytics/Analytics";
@@ -30,10 +33,10 @@ import SettingsService, {
   DefaultSettingsService,
 } from "./settings/SettingsService";
 import SettingsServiceContext from "./settings/SettingsServiceContext";
+import SettingsLoadingDeskServiceManager from "./desk/SettingsLoadingDeskServiceManager";
 
 const credentialsService = new CredentialsService();
 const presenceService: PresenceService = new TogglPresenceService();
-const deskStatusService: ManualDeskStatusService = new ManualDeskStatusService();
 const rxDbPersistenceService: RxDbPersistenceService = new RxDbPersistenceService();
 const statusPersistenceService: StatusPersistenceService = new RxDbStatusPersistenceService(
   rxDbPersistenceService
@@ -41,11 +44,12 @@ const statusPersistenceService: StatusPersistenceService = new RxDbStatusPersist
 const analyticsService: AnalyticsService = new DefaultAnalyticsService(
   statusPersistenceService
 );
-const deskControlService: DeskControlService = new ManualDeskControlService(
-  deskStatusService
-);
 const settingsService: SettingsService = new DefaultSettingsService(
   rxDbPersistenceService
+);
+const deskServiceManager = new SettingsLoadingDeskServiceManager(
+  settingsService,
+  credentialsService
 );
 
 const App = (): React.ReactElement => {
@@ -54,6 +58,9 @@ const App = (): React.ReactElement => {
       // Never emits
     })
   );
+  const [deskControlService, setDeskControlService] = useState<
+    DeskControlService
+  >(new ManualDeskControlService(new ManualDeskStatusService()));
 
   const [analyticsObservable, setAnalyticsObservable] = useState(
     new Observable<Analytics>(() => {
@@ -68,47 +75,55 @@ const App = (): React.ReactElement => {
       presenceService.initialize(credentialsService),
       rxDbPersistenceService.initialize(),
       statusPersistenceService.initialize(),
-    ]).then(() => {
-      setAnalyticsObservable(analyticsService.getActiveAnalytics());
-
-      combineLatest(
-        presenceService.getObservable(),
-        deskStatusService.getObservable()
+    ])
+      .then(
+        async (): Promise<DeskStatusService> => {
+          const deskServices = await deskServiceManager.getDeskServices();
+          setDeskControlService(deskServices.controlService);
+          return deskServices.statusService;
+        }
       )
-        .pipe(
-          map((observation: [PresenceStatus, DeskStatus]) => {
-            return {
-              presence: observation[0],
-              desk: observation[1],
-            };
-          })
-        )
-        .subscribe((status) => {
-          statusPersistenceService.statusUpdate(status);
-        });
+      .then((statusService: DeskStatusService) => {
+        setAnalyticsObservable(analyticsService.getActiveAnalytics());
 
-      statusPersistenceService
-        .getStatusObservable()
-        .then((statusObservable) => {
-          const tickingStatusObservable: Observable<Status> = shareReplay<
-            StatusChange
-          >(1)(statusObservable).pipe(
-            map((observation: StatusChange) => {
+        combineLatest(
+          presenceService.getObservable(),
+          statusService.getObservable()
+        )
+          .pipe(
+            map((observation: [PresenceStatus, DeskStatus]) => {
               return {
-                at: new Date(observation.atEpochMilliseconds),
-                presence:
-                  Presence[observation.presence as keyof typeof Presence],
-                deskPosition:
-                  DeskPosition[
-                    observation.deskPosition as keyof typeof DeskPosition
-                  ],
+                presence: observation[0],
+                desk: observation[1],
               };
             })
-          );
+          )
+          .subscribe((status) => {
+            statusPersistenceService.statusUpdate(status);
+          });
 
-          setStatusObservable(tickingStatusObservable);
-        });
-    });
+        statusPersistenceService
+          .getStatusObservable()
+          .then((statusObservable) => {
+            const tickingStatusObservable: Observable<Status> = shareReplay<
+              StatusChange
+            >(1)(statusObservable).pipe(
+              map((observation: StatusChange) => {
+                return {
+                  at: new Date(observation.atEpochMilliseconds),
+                  presence:
+                    Presence[observation.presence as keyof typeof Presence],
+                  deskPosition:
+                    DeskPosition[
+                      observation.deskPosition as keyof typeof DeskPosition
+                    ],
+                };
+              })
+            );
+
+            setStatusObservable(tickingStatusObservable);
+          });
+      });
 
     return (): void => {
       if (statusSubscription) {

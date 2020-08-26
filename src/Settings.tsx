@@ -3,22 +3,34 @@ import NavBar, { Page } from "./view-settings/nav/NavBar";
 import DeskSettingsPage from "./view-settings/pages/DeskSettingsPage";
 import CredentialsService from "./credentials/CredentialsService";
 import CredentialsServiceContext from "./credentials/CredentialsServiceContext";
-import DefaultGeekdeskService, {
-  GeekdeskService,
-} from "./desk/geekdesk/GeekdeskService";
+import SettingsService, {
+  DefaultSettingsService,
+} from "./settings/SettingsService";
+import RxDbPersistenceService from "./persistence/RxDbPersistenceService";
+import SettingsServiceContext from "./settings/SettingsServiceContext";
+import { useEffect, useState } from "react";
 
 const credentialsService: CredentialsService = new CredentialsService();
-const geekdeskService: GeekdeskService = new DefaultGeekdeskService();
+const rxDbPersistenceService: RxDbPersistenceService = new RxDbPersistenceService();
+const settingsService: SettingsService = new DefaultSettingsService(
+  rxDbPersistenceService
+);
 
 const Settings = (): React.ReactElement => {
-  const [page, setPage] = React.useState(Page.DESK);
+  const [page, setPage] = useState(Page.DESK);
+  const [loading, setLoading] = useState(true);
 
   const renderPage = (selectedPage: Page): React.ReactElement => {
     let pageElement;
 
     switch (selectedPage) {
       case Page.DESK:
-        pageElement = <DeskSettingsPage geekdeskService={geekdeskService} />;
+        pageElement = (
+          <DeskSettingsPage
+            settingsService={settingsService}
+            credentialsService={credentialsService}
+          />
+        );
         break;
       case Page.PRESENCE:
         pageElement = <></>;
@@ -30,11 +42,26 @@ const Settings = (): React.ReactElement => {
     return pageElement;
   };
 
+  useEffect((): void => {
+    const initialize = async (): Promise<void> => {
+      await rxDbPersistenceService.initialize();
+      setLoading(false);
+    };
+
+    initialize();
+  }, []);
+
   return (
-    <CredentialsServiceContext.Provider value={credentialsService}>
-      <NavBar selectPage={setPage} />
-      <div>{renderPage(page)}</div>
-    </CredentialsServiceContext.Provider>
+    <SettingsServiceContext.Provider value={settingsService}>
+      <CredentialsServiceContext.Provider value={credentialsService}>
+        {!loading && (
+          <>
+            <NavBar selectPage={setPage} />
+            <div>{renderPage(page)}</div>
+          </>
+        )}
+      </CredentialsServiceContext.Provider>
+    </SettingsServiceContext.Provider>
   );
 };
 

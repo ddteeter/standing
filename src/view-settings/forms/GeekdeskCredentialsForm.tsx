@@ -8,8 +8,8 @@ import {
   CREDENTIALS_SERVICE,
   CREDENTIALS_ACCOUNT,
   CREDENTIALS_TOKEN,
-  loadCredentials,
   GeekdeskService,
+  GeekdeskCredentials,
 } from "../../desk/geekdesk/GeekdeskService";
 
 type ParticleCredentials = {
@@ -21,11 +21,13 @@ type ParticleCredentials = {
 type Props = {
   setConnected(connected: boolean): void;
   geekdeskService: GeekdeskService;
+  initialCredentials?: GeekdeskCredentials;
 };
 
 const GeekdeskCredentialsForm = ({
   setConnected: setParentConnected,
   geekdeskService,
+  initialCredentials,
 }: Props): React.ReactElement<Props> => {
   const credentialsService = useContext(CredentialsServiceContext);
   const [mfaToken, setMfaToken] = useState<string | null>(null);
@@ -114,16 +116,14 @@ const GeekdeskCredentialsForm = ({
 
   useEffect(() => {
     const checkCredentials = async (): Promise<void> => {
-      const geekdeskCredentials = await loadCredentials(credentialsService);
-
-      if (geekdeskCredentials) {
-        setValue("particleUsername", geekdeskCredentials.username);
-        setValue("particlePassword", geekdeskCredentials.password);
+      if (initialCredentials) {
+        setValue("particleUsername", initialCredentials.username);
+        setValue("particlePassword", initialCredentials.password);
 
         tryConnection(
-          geekdeskCredentials.username,
-          geekdeskCredentials.password,
-          geekdeskCredentials.token
+          initialCredentials.username,
+          initialCredentials.password,
+          initialCredentials.token
         );
       }
     };
@@ -216,7 +216,7 @@ const GeekdeskCredentialsForm = ({
             <SecondaryButton
               type="button"
               label="Disconnect"
-              onClick={() => {
+              onClick={(): void => {
                 clearForm();
               }}
             />

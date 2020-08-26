@@ -1,9 +1,25 @@
 import React from "react";
-import { GeekdeskService, Device } from "./GeekdeskService";
+import {
+  GeekdeskService,
+  Device,
+  GeekdeskCredentials,
+} from "./GeekdeskService";
 import { Observable } from "rxjs";
 import { DeskStatus, DeskPosition } from "../status/DeskStatusService";
 
 class NoOpGeekdeskService implements GeekdeskService {
+  isReady(): boolean {
+    return false;
+  }
+  getSelectedDevice(): string | null {
+    return null;
+  }
+  getHeights(): { sittingHeight: number; standingHeight: number } | null {
+    return null;
+  }
+  getCredentials(): GeekdeskCredentials | null {
+    return null;
+  }
   initializeWithOneTimePassword(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _mfaToken: string,

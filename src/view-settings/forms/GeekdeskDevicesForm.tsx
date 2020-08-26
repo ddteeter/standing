@@ -7,6 +7,7 @@ import Select from "../../forms/Select";
 
 type Props = {
   geekdeskService: GeekdeskService;
+  initialSelectedDevice: string;
   onDeviceSelected(deviceId: string): void;
 };
 
@@ -14,14 +15,18 @@ type DeviceForm = {
   id: string;
 };
 
-const GeekdeskCredentialsForm = ({
+const GeekdeskDevicesForm = ({
   geekdeskService,
+  initialSelectedDevice,
   onDeviceSelected,
 }: Props): React.ReactElement<Props> => {
   const [availableDevices, setAvailableDevices] = useState<Device[]>([]);
 
   const { register, handleSubmit, errors } = useForm<DeviceForm>({
     mode: "onBlur",
+    defaultValues: {
+      id: initialSelectedDevice,
+    },
   });
 
   const loadDevices = useCallback(async (): Promise<void> => {
@@ -86,4 +91,4 @@ const GeekdeskCredentialsForm = ({
   );
 };
 
-export default GeekdeskCredentialsForm;
+export default GeekdeskDevicesForm;

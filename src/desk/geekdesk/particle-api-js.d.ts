@@ -28,6 +28,18 @@ declare module "particle-api-js" {
     };
   };
 
+  interface EventStream extends EventEmitter {
+    end(): void;
+  }
+
+  type ParticleEvent = {
+    name: string;
+    data: string;
+    ttl: string;
+    published_at: string;
+    coredid: string;
+  };
+
   type FunctionResponse = {
     id: string;
     name: string;
@@ -82,8 +94,16 @@ declare module "particle-api-js" {
       auth: string;
       headers?: { [string]: string };
     }): Promise<{ body: FunctionResponse }>;
+
+    getEventStream(options: {
+      deviceId: string;
+      name: string;
+      org?: string;
+      product?: string;
+      auth: string;
+    }): Promise<EventStream>;
   }
 
   export default Particle;
-  export { Device };
+  export { Device, EventStream, ParticleEvent };
 }

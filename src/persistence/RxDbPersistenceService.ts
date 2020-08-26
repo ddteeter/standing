@@ -6,7 +6,6 @@ import {
   createRxDatabase,
   RxJsonSchema,
   addRxPlugin,
-  removeRxDatabase,
 } from "rxdb";
 import * as pouchDbIdb from "pouchdb-adapter-idb";
 
@@ -56,6 +55,7 @@ const settingsMethods: SettingsMethods = {};
 
 type Settings = {
   type: string;
+  active: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   values: Record<string, any>;
 };
@@ -70,11 +70,14 @@ const settingsSchema: RxJsonSchema<Settings> = {
       type: "string",
       primary: true,
     },
+    active: {
+      type: "boolean",
+    },
     values: {
       type: "object",
     },
   },
-  required: ["type", "values"],
+  required: ["type", "active", "values"],
 };
 
 type SettingsDocument = RxDocument<Settings, SettingsMethods>;
@@ -102,9 +105,7 @@ export default class RxDbPersistenceService {
 
   async initialize(): Promise<Database> {
     if (!this.database) {
-      // TODO: Development only
-      await removeRxDatabase("withstanding_db", "idb");
-
+      await navigator.storage.persist();
       this.database = await createRxDatabase<DatabaseCollections>({
         name: "withstanding_db",
         adapter: "idb",
