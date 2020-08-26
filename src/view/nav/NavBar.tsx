@@ -7,16 +7,14 @@ import DeskControlService from "../../desk/control/DeskControlService";
 import DeskControlServiceContext from "../../desk/control/DeskControlServiceContext";
 import { useContext } from "react";
 import { DeskPosition } from "../../desk/status/DeskStatusService";
-import SettingsService, {
-  DefaultSettingsService,
-} from "../../settings/SettingsService";
-
-const settingsService: SettingsService = new DefaultSettingsService();
+import SettingsService from "../../settings/SettingsService";
+import SettingsServiceContext from "../../settings/SettingsServiceContext";
 
 const NavBar = (): React.ReactElement => {
   const deskControlService: DeskControlService = useContext(
     DeskControlServiceContext
   );
+  const settingsService: SettingsService = useContext(SettingsServiceContext);
 
   return (
     <div className="fixed bottom-0 w-full bg-gray-600">
