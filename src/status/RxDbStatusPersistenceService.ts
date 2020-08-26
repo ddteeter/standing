@@ -75,7 +75,6 @@ class RxDbStatusPersistenceService implements StatusPersistenceService {
       .status_changes.find()
       .where("atEpochMilliseconds")
       .gte(startOfDay(day).getTime())
-      .and("atEpochMilliseconds")
       .lte(endOfDay(day).getTime()).$;
   }
 }

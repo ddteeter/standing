@@ -45,12 +45,6 @@ const DeskSettingsPage = ({
         credentialsService,
         settingsService
       );
-      console.log(
-        "Initialized",
-        geekdeskService.getSelectedDevice(),
-        geekdeskService.getCredentials(),
-        geekdeskService.getHeights()
-      );
       setSelectedDevice(geekdeskService.getSelectedDevice());
       setInitialCredentials(geekdeskService.getCredentials());
       setInitialHeights(geekdeskService.getHeights());
@@ -71,7 +65,6 @@ const DeskSettingsPage = ({
       sittingHeight: positionSettings.sittingHeight,
       standingHeight: positionSettings.standingHeight,
     };
-    console.log("Updating settings", geekdeskSettings);
     await settingsService.updateSettings(SETTINGS_TYPE, true, geekdeskSettings);
     return true;
   };

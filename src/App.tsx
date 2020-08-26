@@ -7,7 +7,7 @@ import PresenceService, {
 import CredentialsService from "./credentials/CredentialsService";
 import Dashboard from "./view/dashboard/Dashboard";
 import { combineLatest, Observable, Subscription } from "rxjs";
-import { map, shareReplay } from "rxjs/operators";
+import { map, shareReplay, distinctUntilKeyChanged } from "rxjs/operators";
 import Status from "./status/Status";
 import ManualDeskStatusService from "./desk/status/ManualDeskStatusService";
 import DeskStatusService, {
@@ -87,8 +87,12 @@ const App = (): React.ReactElement => {
         setAnalyticsObservable(analyticsService.getActiveAnalytics());
 
         combineLatest(
-          presenceService.getObservable(),
-          statusService.getObservable()
+          presenceService
+            .getObservable()
+            .pipe(distinctUntilKeyChanged("presence")),
+          statusService
+            .getObservable()
+            .pipe(distinctUntilKeyChanged("position"))
         )
           .pipe(
             map((observation: [PresenceStatus, DeskStatus]) => {

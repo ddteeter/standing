@@ -117,12 +117,14 @@ export default class DefaultGeekdeskService implements GeekdeskService {
                 Object.prototype.hasOwnProperty.call(data, "name")
               ) {
                 const particleEvent = data as ParticleEvent;
-                subscriber.next({
-                  at: parseISO(particleEvent.published_at),
-                  position: this.getPositionFromHeight(
-                    Number.parseInt(particleEvent.data)
-                  ),
-                });
+                if (particleEvent.name === "height") {
+                  subscriber.next({
+                    at: parseISO(particleEvent.published_at),
+                    position: this.getPositionFromHeight(
+                      Number.parseInt(particleEvent.data)
+                    ),
+                  });
+                }
               }
             });
           });
@@ -221,13 +223,17 @@ export default class DefaultGeekdeskService implements GeekdeskService {
   }
 
   async setDeskPosition(position: DeskPosition): Promise<void> {
-    console.log("Setting desk height: ", this.heightSettings.get(position));
-    // await this.particle.callFunction({
-    //   deviceId: this.deviceId,
-    //   auth: this.getAccessToken(),
-    //   name: "setHeight",
-    //   argument: `${this.heightSettings.get(position)}`,
-    // });
+    if (
+      (await this.getCurrentPosition()) !== position &&
+      this.heightSettings.has(position)
+    ) {
+      await this.particle.callFunction({
+        deviceId: this.deviceId,
+        auth: this.getAccessToken(),
+        name: "setHeight",
+        argument: `${this.heightSettings.get(position)}`,
+      });
+    }
   }
 
   async getCurrentPosition(): Promise<DeskPosition> {
