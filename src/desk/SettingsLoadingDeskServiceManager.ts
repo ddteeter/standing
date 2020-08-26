@@ -37,14 +37,26 @@ export default class SettingsLoadingDeskServiceManager {
   async getDeskServices(): Promise<InitializedDeskServices> {
     const settings: ResolvedSettings | null = await this.settingsService.getActiveSettings();
 
-    let initializer: DeskServiceInitializer = new DefaultDeskServiceInitializer();
+    const defaultInitializer: DeskServiceInitializer = new DefaultDeskServiceInitializer();
+    let initializer = defaultInitializer;
     if (settings !== null) {
       initializer = TYPE_TO_INITIALIZER.get(settings.type);
     }
 
-    return await initializer.initialize(
-      this.credentialsService,
-      this.settingsService
-    );
+    try {
+      return await initializer.initialize(
+        this.credentialsService,
+        this.settingsService
+      );
+    } catch (error) {
+      console.error(
+        "Unable to initialize configured desk service -- falling back to default",
+        error
+      );
+      return await defaultInitializer.initialize(
+        this.credentialsService,
+        this.settingsService
+      );
+    }
   }
 }
